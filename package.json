@@ -1,13 +1,16 @@
 {
-  "name": "manian-backend",
+  "name": "ManianTEA",
   "version": "1.0.0",
-  "description": "Backend pour le site de tisanes Manian Tea",
+  "description": "Description de votre projet",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "express": "^4.19.2",
-    "mongoose": "^8.5.1",
-  }
+    "express": "^4.17.1",
+    "mongodb": "^4.1.0"
+  },
+  "devDependencies": {},
+  "author": "Votre Nom",
+  "license": "ISC"
 }
