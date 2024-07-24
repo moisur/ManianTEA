@@ -13,6 +13,7 @@ const client = new MongoClient(uri, {
         deprecationErrors: true,
     }
 });
+app.use(cors()); // Ajoutez cette ligne
 
 app.use(express.json()); 
 
@@ -20,7 +21,7 @@ app.post('/api/subscribers', async (req, res) => {
     try {
         await client.connect();
         const db = client.db("Manian"); 
-        const subscribers = db.collection("subscribers");
+        const subscribers = db.collection("Mails");
 
         const { email } = req.body; 
         const result = await subscribers.insertOne({ email });
