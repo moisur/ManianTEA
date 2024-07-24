@@ -1,3 +1,4 @@
+const cors = require('cors');
 const express = require('express');
 const { MongoClient, ServerApiVersion } = require('mongodb'); 
 
@@ -13,7 +14,7 @@ const client = new MongoClient(uri, {
         deprecationErrors: true,
     }
 });
-app.use(cors()); // Ajoutez cette ligne
+app.use(cors()); 
 
 app.use(express.json()); 
 
