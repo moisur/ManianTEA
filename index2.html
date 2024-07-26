@@ -513,8 +513,16 @@
         setInterval(displayQuote, 8000);
 
         document.querySelector('button').addEventListener('click', async () => {
+        function validateEmail(email) {
+            const re = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+            return re.test(email);
+        }
         const email = document.querySelector('input[type="email"]').value;
-        try {
+        if (!validateEmail(email)) {    
+            alert("Veuillez entrer une adresse email valide.");
+            return false;
+        }
+            try {
             const response = await fetch('https://maniantea-1.onrender.com/api/subscribers', {
                 method: 'POST',
                 headers: {
