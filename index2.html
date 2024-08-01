@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tisanes de Khoznavar - Site en Construction</title>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400&display=swap');
 
@@ -235,7 +236,11 @@
             position: absolute;
             width: 25%;
             height: 20%;
-            background: rgba(0, 0, 0, 0.5);
+            font-weight: 600;
+            background: rgba(0, 0, 0, 0.7);  /* Augmenter légèrement la transparence */
+            backdrop-filter: blur(10px);  /* Augmenter le flou */
+            border: 1px solid rgba(255, 255, 255, 0.2);  /* Ajouter une bordure subtile */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1);  /* Ombrage pour la profondeur */
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -248,11 +253,6 @@
             left: 5%;
             top: 50%;
             transform: translateY(-50%);
-        }
-        .quote-zone.top {
-            top: 8%;
-            left: 50%;
-            transform: translateX(-50%);
         }
         .quote-zone.right-top {
             right: 5%;
@@ -351,6 +351,7 @@
                 <span class="arrow">↑</span>
                 <span class="arrow">↑</span>
             </div>
+            <div class="g-recaptcha" data-sitekey="6LczUx0qAAAAAPVLg5y9n3TOJP1FLa-Ocp37gma5"></div>
             <button>Rejoindre la liste d'attente</button>
     
         </div>
@@ -366,7 +367,6 @@
         const scene = document.querySelector('.scene');
         const quoteZones = {
             left: document.querySelector('.quote-zone.left'),
-            top: document.querySelector('.quote-zone.top'),
             rightTop: document.querySelector('.quote-zone.right-top'),
             rightBottom: document.querySelector('.quote-zone.right-bottom')
         };
@@ -522,7 +522,7 @@
             alert("Veuillez entrer une adresse email valide.");
             return false;
         }
-            try {
+        try {
             const response = await fetch('https://maniantea-1.onrender.com/api/subscribers', {
                 method: 'POST',
                 headers: {
