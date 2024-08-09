@@ -2,9 +2,9 @@
   "name": "ManianTEA",
   "version": "1.0.0",
   "description": "Description de votre projet",
-  "main": "index.mjs",
+  "main": "index.js",
   "scripts": {
-      "start": "node --experimental-modules index.mjs"
+      "start": "index.js"
   },
   "dependencies": {
     "express": "^4.17.1",
