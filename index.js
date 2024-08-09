@@ -1,7 +1,6 @@
 const cors = require('cors');
 const express = require('express');
 const { MongoClient, ServerApiVersion } = require('mongodb'); 
-require('dotenv').config(); // Charger les variables d'environnement à partir du fichier .env
 const { RecaptchaEnterpriseServiceClient } = require('@google-cloud/recaptcha-enterprise');
 
 const app = express();
