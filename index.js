@@ -47,7 +47,7 @@ app.post('/api/subscribers', async (req, res) => {
                 event: {
                     token: recaptchaToken,
                     siteKey: process.env.RECAPTCHA_SITE_KEY,
-                    expectedAction: 'LOGIN', // Remplacez par l'action appropriée
+                    expectedAction: 'click', // Remplacez par l'action appropriée
                 },
             },
         });
