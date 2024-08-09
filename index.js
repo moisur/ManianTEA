@@ -2,11 +2,15 @@ const cors = require('cors');
 const express = require('express');
 const { MongoClient, ServerApiVersion } = require('mongodb'); 
 require('dotenv').config(); // Charger les variables d'environnement à partir du fichier .env
+const { RecaptchaEnterpriseServiceClient } = require('@google-cloud/recaptcha-enterprise');
 
 const app = express();
 const port = process.env.PORT || 10000; 
 
 const uri = process.env.MONGODB_URI;
+const recaptchaSecretKey = process.env.RECAPTCHA_SECRET_KEY;
+
+const recaptchaClient = new RecaptchaEnterpriseServiceClient();
 
 let db; // Variable globale pour la base de données
 
@@ -31,11 +35,31 @@ client.connect()
 app.use(cors()); 
 app.use(express.json()); 
 
-app.post('https://backend-maniantea.onrender.com/api/subscribers', async (req, res) => {
+// Route pour ajouter des abonnés à la base de données avec validation du reCAPTCHA
+app.post('/api/subscribers', async (req, res) => {
     try {
-        const subscribers = db.collection("Mails");
+        const { email, recaptchaToken } = req.body; 
+        
+        // Validation du token reCAPTCHA
+        const recaptchaResponse = await recaptchaClient.assessments.createAssessment({
+            parent: `projects/${process.env.GOOGLE_CLOUD_PROJECT_ID}`,
+            assessment: {
+                event: {
+                    token: recaptchaToken,
+                    siteKey: process.env.RECAPTCHA_SITE_KEY,
+                    expectedAction: 'LOGIN', // Remplacez par l'action appropriée
+                },
+            },
+        });
 
-        const { email } = req.body; 
+        const recaptchaScore = recaptchaResponse[0].result.score;
+
+        if (recaptchaScore < 0.5) { // Adjust threshold as needed
+            return res.status(400).json({ msg: 'Validation reCAPTCHA échouée. Veuillez réessayer.' });
+        }
+
+        // Si le reCAPTCHA est validé, ajoutez l'email à la base de données
+        const subscribers = db.collection("Mails");
         const result = await subscribers.insertOne({ email });
         res.status(201).json({ msg: 'Merci de votre inscription !' });
     } catch (error) {
