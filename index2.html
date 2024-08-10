@@ -513,7 +513,9 @@
 
         setInterval(createPlant, 2000);
         setInterval(displayQuote, 8000);
-               document.querySelector('button').addEventListener('click', async (e) => {
+
+        
+            document.querySelector('button').addEventListener('click', async (e) => {
             e.preventDefault(); // Prévenir le comportement par défaut du bouton
 
             function validateEmail(email) {
@@ -539,7 +541,10 @@
                         },
                         body: JSON.stringify({ email, token }), // Inclure le token reCAPTCHA
                     });
-
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
                     const data = await response.json();
                     alert(data.msg);
                 } catch (error) {
