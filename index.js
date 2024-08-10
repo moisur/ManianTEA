@@ -6,6 +6,10 @@ const { RecaptchaEnterpriseServiceClient } = require('@google-cloud/recaptcha-en
 const app = express();
 const port = process.env.PORT || 10000;
 
+const corsOptions = {
+  origin: 'https://moisur.github.io', 
+  optionsSuccessStatus: 200 
+};
 const uri = process.env.MONGODB_URI;
 const recaptchaSecretKey = process.env.RECAPTCHA_SECRET_KEY;
 const recaptchaSiteKey =  '6Ld37SIqAAAAALzGUoYS1444GFxYwR6OODSRm6V7'; // <-- Assurez-vous que c'est la bonne clé
