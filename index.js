@@ -45,32 +45,8 @@ app.use(express.json());
 
 app.post('/api/subscribers', async (req, res) => {
     try {
-        const { email, recaptchaToken } = req.body;
-
-        // Vérification reCAPTCHA Enterprise
-        const recaptchaResponse = await recaptchaClient.assessments.createAssessment({
-            parent: `projects/${process.env.GOOGLE_CLOUD_PROJECT_ID}`,
-            assessment: {
-                event: {
-                    token: recaptchaToken,
-                    siteKey: recaptchaSiteKey, 
-                    expectedAction: 'subscribe', 
-                },
-            },
-        });
-
-        const recaptchaScore = recaptchaResponse[0].result.score;
-
-        if (recaptchaScore < 0.5) {
-            return res.status(400).json({ msg: 'Validation reCAPTCHA échouée. Veuillez réessayer.' });
-        }
-
-        // Insertion dans MongoDB
-        const subscribers = db.collection("Mails");
-        const result = await subscribers.insertOne({ email });
-        console.log(`Email ${email} ajouté à la base de données.`);
-        res.status(201).json({ msg: 'Merci de votre inscription !' });
-
+        console.log("Requête reçue !", req.body); //  <--  Ajoutez un log ici
+        res.status(200).json({ msg: 'Requête reçue avec succès !' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ msg: 'Erreur serveur.' });
