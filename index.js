@@ -35,7 +35,6 @@ client.connect()
     })
     .catch((err) => {
         console.error("Erreur lors de la connexion à MongoDB", err);
-        // Gérer l'erreur de connexion à MongoDB, par exemple, arrêter l'application.
         process.exit(1); 
     });
 
@@ -48,7 +47,7 @@ app.post('/api/subscribers', async (req, res) => {
         const { email, recaptchaToken } = req.body;
 
         // Vérification reCAPTCHA Enterprise
-        const recaptchaResponse = await recaptchaClient.assessments.createAssessment({
+        const [recaptchaResponse] = await recaptchaClient.createAssessment({
             parent: `projects/${process.env.GOOGLE_CLOUD_PROJECT_ID}`,
             assessment: {
                 event: {
@@ -59,7 +58,7 @@ app.post('/api/subscribers', async (req, res) => {
             },
         });
 
-        const recaptchaScore = recaptchaResponse[0].result.score;
+        const recaptchaScore = recaptchaResponse.riskAnalysis.score;
 
         if (recaptchaScore < 0.5) {
             return res.status(400).json({ msg: 'Validation reCAPTCHA échouée. Veuillez réessayer.' });
