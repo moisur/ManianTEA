@@ -66,6 +66,10 @@ app.post('/api/subscribers', async (req, res) => {
             }
         };
         const [response] = await client.createAssessment(request);
+        
+        const score = response.riskAnalysis.score;
+        console.log('reCAPTCHA score:', score);
+        console.log('reCAPTCHA response:', JSON.stringify(response, null, 2));
 
         if (!response.tokenProperties.valid) {
             throw new Error('Invalid reCAPTCHA token');
