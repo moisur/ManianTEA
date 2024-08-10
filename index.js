@@ -43,35 +43,22 @@ app.use(cors(corsOptions));
 app.use(express.json()); 
 
 app.post('/api/subscribers', async (req, res) => {
+    console.log('Received request to /api/subscribers');
     try {
-        const { email, recaptchaToken } = req.body;
-
-        // Vérification reCAPTCHA Enterprise
-        const [recaptchaResponse] = await recaptchaClient.createAssessment({
-            parent: `projects/${process.env.GOOGLE_CLOUD_PROJECT_ID}`,
-            assessment: {
-                event: {
-                    token: recaptchaToken,
-                    siteKey: recaptchaSiteKey, 
-                    expectedAction: 'subscribe', 
-                },
-            },
-        });
-
-        const recaptchaScore = recaptchaResponse.riskAnalysis.score;
-
-        if (recaptchaScore < 0.5) {
-            return res.status(400).json({ msg: 'Validation reCAPTCHA échouée. Veuillez réessayer.' });
-        }
-
-        // Insertion dans MongoDB
+        console.log('Request body:', req.body);
         const subscribers = db.collection("Mails");
-        const result = await subscribers.insertOne({ email });
-        console.log(`Email ${email} ajouté à la base de données.`);
-        res.status(201).json({ msg: 'Merci de votre inscription !' });
+        console.log('Got subscribers collection');
 
+        const { email } = req.body; 
+        console.log('Extracted email:', email);
+
+        const result = await subscribers.insertOne({ email });
+        console.log('Insert result:', result);
+
+        res.status(201).json({ msg: 'Merci de votre inscription !' });
+        console.log('Sent success response');
     } catch (error) {
-        console.error(error);
+        console.error('Error in /api/subscribers:', error);
         res.status(500).json({ msg: 'Erreur serveur.' });
     }
 });
