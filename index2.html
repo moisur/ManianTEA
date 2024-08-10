@@ -529,7 +529,7 @@
             }
 
             grecaptcha.enterprise.ready(async () => {
-                const token = await grecaptcha.enterprise.execute('6Ld37SIqAAAAALzGUoYS1444GFxYwR6OODSRm6V7', { action: 'submit' });
+                const token = await grecaptcha.enterprise.execute('6Ld37SIqAAAAALzGUoYS1444GFxYwR6OODSRm6V7', { action: 'subscribe' });
 
                 try {
                     const response = await fetch('https://maniantea-1.onrender.com/api/subscribers', { // Utilisez l'URL complète de votre serveur
