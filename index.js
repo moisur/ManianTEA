@@ -7,7 +7,7 @@ const app = express();
 const port = process.env.PORT || 10000; 
 
 const corsOptions = {
-  origin: 'https://moisur.github.io', //  <-- Remplacez par votre domaine GitHub Pages
+  origin: 'https://moisur.github.io/ManianTEA/index2.html', //  <-- Remplacez par votre domaine GitHub Pages
   optionsSuccessStatus: 200 
 };
 
