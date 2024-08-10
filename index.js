@@ -1,19 +1,20 @@
 const cors = require('cors');
 const express = require('express');
-const { MongoClient, ServerApiVersion } = require('mongodb'); 
+const { MongoClient, ServerApiVersion } = require('mongodb');
 const { RecaptchaEnterpriseServiceClient } = require('@google-cloud/recaptcha-enterprise');
 
 const app = express();
-const port = process.env.PORT || 10000; 
+const port = process.env.PORT || 10000;
 
 const uri = process.env.MONGODB_URI;
 const recaptchaSecretKey = process.env.RECAPTCHA_SECRET_KEY;
+const recaptchaSiteKey =  '6Ld37SIqAAAAALzGUoYS1444GFxYwR6OODSRm6V7'; // <-- Assurez-vous que c'est la bonne clé
 
 const recaptchaClient = new RecaptchaEnterpriseServiceClient();
 
-let db; // Variable globale pour la base de données
+let db;
 
-// Connexion à MongoDB lors du démarrage du serveur
+// MongoDB Connection
 const client = new MongoClient(uri, {
     serverApi: {
         version: ServerApiVersion.v1,
@@ -24,43 +25,44 @@ const client = new MongoClient(uri, {
 
 client.connect()
     .then(() => {
-        db = client.db("Manian"); // Assignation de la base de données à la variable globale
+        db = client.db("Manian");
         console.log("Connexion à MongoDB réussie !");
     })
     .catch((err) => {
         console.error("Erreur lors de la connexion à MongoDB", err);
     });
 
-app.use(cors()); 
-app.use(express.json()); 
+app.use(cors());
+app.use(express.json());
 
-// Route pour ajouter des abonnés à la base de données avec validation du reCAPTCHA
 app.post('/api/subscribers', async (req, res) => {
     try {
-        const { email, recaptchaToken } = req.body; 
-        
-        // Validation du token reCAPTCHA
+        const { email, recaptchaToken } = req.body;
+
+        // Vérification reCAPTCHA Enterprise
         const recaptchaResponse = await recaptchaClient.assessments.createAssessment({
             parent: `projects/${process.env.GOOGLE_CLOUD_PROJECT_ID}`,
             assessment: {
                 event: {
                     token: recaptchaToken,
-                    siteKey: process.env.RECAPTCHA_SITE_KEY,
-                    expectedAction: 'click', // Remplacez par l'action appropriée
+                    siteKey: recaptchaSiteKey, // <-- Utiliser la variable ici
+                    expectedAction: 'subscribe', // <-- Action correspondante
                 },
             },
         });
 
         const recaptchaScore = recaptchaResponse[0].result.score;
 
-        if (recaptchaScore < 0.5) { // Adjust threshold as needed
+        if (recaptchaScore < 0.5) { 
             return res.status(400).json({ msg: 'Validation reCAPTCHA échouée. Veuillez réessayer.' });
         }
 
-        // Si le reCAPTCHA est validé, ajoutez l'email à la base de données
+        // Insertion dans MongoDB
         const subscribers = db.collection("Mails");
         const result = await subscribers.insertOne({ email });
+        console.log(`Email ${email} ajouté à la base de données.`);
         res.status(201).json({ msg: 'Merci de votre inscription !' });
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ msg: 'Erreur serveur.' });
