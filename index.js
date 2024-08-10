@@ -2,7 +2,7 @@ const cors = require('cors');
 const express = require('express');
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const { RecaptchaEnterpriseServiceClient } = require('@google-cloud/recaptcha-enterprise');
-
+const fs = require('fs');
 const app = express();
 const port = process.env.PORT || 10000; 
 
@@ -42,6 +42,10 @@ client.connect()
 app.use(cors(corsOptions));
 app.use(express.json()); 
 
+if (process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
+  fs.writeFileSync('/tmp/google-credentials.json', process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON);
+  process.env.GOOGLE_APPLICATION_CREDENTIALS = '/tmp/google-credentials.json';
+}
 app.post('/api/subscribers', async (req, res) => {
     console.log('Received request to /api/subscribers');
     try {
