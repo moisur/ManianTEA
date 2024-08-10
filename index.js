@@ -46,22 +46,48 @@ app.post('/api/subscribers', async (req, res) => {
     console.log('Received request to /api/subscribers');
     try {
         console.log('Request body:', req.body);
-        const subscribers = db.collection("Mails");
-        console.log('Got subscribers collection');
-
-        const { email } = req.body; 
+        const { email, token } = req.body;
         console.log('Extracted email:', email);
 
+        // Vérification reCAPTCHA
+        const client = new RecaptchaEnterpriseServiceClient();
+        const projectPath = client.projectPath(process.env.GOOGLE_CLOUD_PROJECT);
+        const request = {
+            parent: projectPath,
+            assessment: {
+                event: {
+                    token: token,
+                    siteKey: recaptchaSiteKey
+                }
+            }
+        };
+        const [response] = await client.createAssessment(request);
+
+        if (!response.tokenProperties.valid) {
+            throw new Error('Invalid reCAPTCHA token');
+        }
+
+        if (response.riskAnalysis.score < 0.5) {
+            throw new Error('reCAPTCHA score too low');
+        }
+
+        // Si la vérification reCAPTCHA est passée, procédez à l'insertion
+        const subscribers = db.collection("Mails");
+        console.log('Got subscribers collection');
         const result = await subscribers.insertOne({ email });
         console.log('Insert result:', result);
-
         res.status(201).json({ msg: 'Merci de votre inscription !' });
         console.log('Sent success response');
     } catch (error) {
         console.error('Error in /api/subscribers:', error);
-        res.status(500).json({ msg: 'Erreur serveur.' });
+        if (error.message === 'Invalid reCAPTCHA token' || error.message === 'reCAPTCHA score too low') {
+            res.status(400).json({ msg: 'Vérification reCAPTCHA échouée.' });
+        } else {
+            res.status(500).json({ msg: 'Erreur serveur.' });
+        }
     }
 });
+
 
 app.listen(port, () => {
     console.log(`Serveur en écoute sur le port ${port}`);
