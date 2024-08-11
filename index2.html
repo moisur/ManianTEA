@@ -577,6 +577,8 @@ function showWaitingMessage() {
     return waitingOverlay;
 }
 
+// ... (le reste du code JavaScript existant)
+
 document.querySelector('button').addEventListener('click', async (e) => {
     e.preventDefault();
 
@@ -611,7 +613,10 @@ document.querySelector('button').addEventListener('click', async (e) => {
             }
             const data = await response.json();
             waitingOverlay.remove();
+            
+            // Afficher l'alerte et rediriger après le clic sur OK
             alert(data.msg);
+            window.location.href = 'confirmation.html?email=' + encodeURIComponent(email);
         } catch (error) {
             console.error('Error:', error);
             waitingOverlay.remove();
@@ -619,6 +624,6 @@ document.querySelector('button').addEventListener('click', async (e) => {
         }
     });
 });
-    </script>
+</script>
 </body>
 </html>
